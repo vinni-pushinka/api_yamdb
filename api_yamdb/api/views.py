@@ -18,6 +18,8 @@ class TitleViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     """ViewSet для модели Review (Отзыв)."""
 
+    queryset = Review.objects.all()
+
     # Добавить новый отзыв.
     # Пользователь может оставить только один отзыв на произведение.
     # Права доступа: **Аутентифицированные пользователи.**
@@ -31,6 +33,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     """ViewSet для модели Comment (Комментарий)."""
+
+    queryset = Comment.objects.all()
 
     # Получить список всех комментариев к отзыву по id
     # Права доступа: **Доступно без токена.**

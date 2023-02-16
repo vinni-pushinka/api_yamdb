@@ -14,10 +14,18 @@ ROLES = (
 
 
 class User(AbstractUser):
-    username = models.CharField(max_length=150, unique=True, verbose_name="Логин")
-    email = models.EmailField(max_length=254, unique=True, verbose_name="Почта")
-    first_name = models.CharField(blank=True, max_length=150, verbose_name="Имя")
-    last_name = models.CharField(blank=True, max_length=150, verbose_name="Фамилия")
+    username = models.CharField(
+        max_length=150, unique=True, verbose_name="Логин"
+    )
+    email = models.EmailField(
+        max_length=254, unique=True, verbose_name="Почта"
+    )
+    first_name = models.CharField(
+        blank=True, max_length=150, verbose_name="Имя"
+    )
+    last_name = models.CharField(
+        blank=True, max_length=150, verbose_name="Фамилия"
+    )
     bio = models.TextField(blank=True, verbose_name="Биография")
     role = models.CharField(
         max_length=255, choices=ROLES, default=USER, verbose_name="Роль"
@@ -32,9 +40,13 @@ class User(AbstractUser):
 
 class Category(models.Model):
     name = models.CharField(
-        max_length=256, default="Отсутствует", verbose_name="Название категории"
+        max_length=256,
+        default="Отсутствует",
+        verbose_name="Название категории",
     )
-    slug = models.SlugField(max_length=50, unique=True, verbose_name="Slug категории")
+    slug = models.SlugField(
+        max_length=50, unique=True, verbose_name="Slug категории"
+    )
 
     class Meta:
         verbose_name = "Категория"
@@ -45,7 +57,9 @@ class Category(models.Model):
 
 class Genre(models.Model):
     name = models.CharField(max_length=256, verbose_name="Название жанра")
-    slug = models.SlugField(max_length=50, unique=True, verbose_name="Slug жанра")
+    slug = models.SlugField(
+        max_length=50, unique=True, verbose_name="Slug жанра"
+    )
 
     class Meta:
         verbose_name = "Жанр"
@@ -55,7 +69,9 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    name = models.CharField(max_length=256, verbose_name="Название произведения")
+    name = models.CharField(
+        max_length=256, verbose_name="Название произведения"
+    )
     year = models.PositiveSmallIntegerField(verbose_name="Год выпуска")
     description = models.TextField(verbose_name="Описание")
 
@@ -102,7 +118,8 @@ class Review(models.Model):
         help_text="Введите текст отзыва",
     )
     score = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(10)], verbose_name="Оценка"
+        validators=[MinValueValidator(1), MaxValueValidator(10)],
+        verbose_name="Оценка",
     )
     pub_date = models.DateTimeField(
         "Дата публикации отзыва",
