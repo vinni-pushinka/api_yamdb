@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import RegexValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
-from .validators import validate_score
 
 
 USER = 'user'
@@ -149,9 +148,8 @@ class Review(models.Model):
         help_text="Введите текст отзыва",
     )
     score = models.IntegerField(
-        blank=False,
-        validators=[validate_score],
-        related_name="reviews",
+        validators=[MinValueValidator(1),
+                    MaxValueValidator(10)],
         verbose_name="Оценка"
     )
     pub_date = models.DateTimeField(
@@ -181,7 +179,6 @@ class Comment(models.Model):
         verbose_name="Комментарий",
     )
     text = models.TextField(
-        blank=False,
         verbose_name="Текст комментария",
     )
     pub_date = models.DateTimeField(
