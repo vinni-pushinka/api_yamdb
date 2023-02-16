@@ -1,5 +1,17 @@
 from rest_framework import viewsets
-from reviews.models import Comment, Review
+from reviews.models import Category, Genre, Title, Comment, Review
+
+
+class CategorytViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+
+
+class GenreViewSet(viewsets.ModelViewSet):
+    queryset = Genre.objects.all()
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.all()
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
