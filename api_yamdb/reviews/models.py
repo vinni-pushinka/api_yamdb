@@ -1,30 +1,37 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import RegexValidator
 from django.db import models
+
+USER = 'user'
+MODERATOR = 'moderator'
+ADMIN = 'admin'
+
+ROLES = (
+    (USER, 'user'),
+    (MODERATOR, 'moderator'),
+    (ADMIN, 'admin'),
+)
 
 
 class User(AbstractUser):
-    ROLE_CHOICES = (
-        ('user', 'Пользователь'),
-        ('moderator', 'Модератор'),
-        ('admin', 'Администратор')
-    )
-
     username = models.CharField(
         max_length=150,
         unique=True,
         verbose_name='Логин'
     )
-    email = models.CharField(
+    email = models.EmailField(
         max_length=254,
         unique=True,
         verbose_name='Почта'
     )
     first_name = models.CharField(
+        blank=True,
         max_length=150,
         verbose_name='Имя'
     )
     last_name = models.CharField(
-        max_length=150,
+        blank=True,
+        max_length=150
         verbose_name='Фамилия'
     )
     bio = models.TextField(
@@ -33,8 +40,8 @@ class User(AbstractUser):
     )
     role = models.CharField(
         max_length=255,
-        choices=ROLE_CHOICES,
-        default='user',
+        choices=ROLES,
+        default=USER,
         verbose_name='Роль'
     )
 
@@ -43,7 +50,6 @@ class User(AbstractUser):
 
     def __str__(self) -> str:
         return self.username
-
 
 class Category(models.Model):
     name = models.CharField(
