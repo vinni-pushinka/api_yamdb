@@ -99,6 +99,7 @@ class CategorytViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ("name",)
     lookup_field = "slug"
+    permission_classes = (IsAdminOrReadOnly,)
 
     def get_object(self):
         return get_object_or_404(self.queryset, slug=self.kwargs["slug"])
@@ -114,6 +115,7 @@ class GenreViewSet(viewsets.ModelViewSet):
     filterset_fields = ("slug",)
     lookup_field = "slug"
     ordering = ("slug",)
+    permission_classes = (IsAdminOrReadOnly,)
 
     def get_object(self):
         return get_object_or_404(self.queryset, slug=self.kwargs["slug"])
@@ -130,6 +132,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     serializer_class = TitleReadSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
+    permission_classes = (IsAdminOrReadOnly,)
 
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):
