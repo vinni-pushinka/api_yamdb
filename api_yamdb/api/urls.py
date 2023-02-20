@@ -10,7 +10,7 @@ from api.views import (
     TitleViewSet,
     UserViewSet,
     sign_up,
-    obtain_token
+    obtain_token,
 )
 
 router = DefaultRouter()
@@ -19,7 +19,7 @@ router.register("genres", GenreViewSet, basename="genres")
 router.register("categories", CategorytViewSet, basename="categories")
 router.register("comments", CommentViewSet, basename="comments")
 router.register("reviews", ReviewViewSet, basename="reviews")
-router.register('users', UserViewSet, basename="users")
+router.register("users", UserViewSet, basename="users")
 
 urlpatterns = [
     path("v1/", include(router.urls)),
