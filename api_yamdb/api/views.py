@@ -1,8 +1,10 @@
+from django.db.models import Avg
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, filters
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
@@ -12,6 +14,14 @@ from reviews.models import Category, Comment, Genre, Review, Title, User
 from api.permissions import IsAdminOrReadOnly, IsAuthorAdminModeratorOrReadOnly
 from api.serializers import UserSerializer, SignUpSerializer, ObtainTokenSerializer
 from api_yamdb.settings import EMAIL
+
+from .filters import TitleFilter
+from .serializers import (
+    CategorySerializer,
+    GenreSerializer,
+    TitleReadSerializer,
+    TitleWriteSerializer,
+)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -27,7 +37,6 @@ class UserViewSet(viewsets.ModelViewSet):
         url_path='me'
     )
     def my_profile(self, request):
-        user = get_object_or_404(User, username=request.user.username)
         if request.method == "GET":
             serializer = UserSerializer(request.user)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -81,15 +90,49 @@ def obtain_token(request):
 
 
 class CategorytViewSet(viewsets.ModelViewSet):
+    """ViewSet для модели Category (Категории)."""
+
     queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ("name",)
+    lookup_field = "slug"
+
+    def get_object(self):
+        return get_object_or_404(self.queryset, slug=self.kwargs["slug"])
 
 
 class GenreViewSet(viewsets.ModelViewSet):
+    """ViewSet для модели Genre (Жанры)."""
+
     queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend)
+    search_fields = ("name",)
+    filterset_fields = ("slug",)
+    lookup_field = "slug"
+    ordering = ("slug",)
+
+    def get_object(self):
+        return get_object_or_404(self.queryset, slug=self.kwargs["slug"])
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
+    """ViewSet для модели Title (Произведения)."""
+
+    queryset = (
+        Title.objects.all()
+        .annotate(Avg("reviews__score"))
+        .prefetch_related("category", "genre")
+    )
+    serializer_class = TitleReadSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TitleFilter
+
+    def get_serializer_class(self):
+        if self.action in ("list", "retrieve"):
+            return TitleReadSerializer
+        return TitleWriteSerializer
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
