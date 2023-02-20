@@ -4,15 +4,18 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
+# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+
+
+# Application definition
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -60,6 +63,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "api_yamdb.wsgi.application"
 
+
+# Database
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -86,6 +92,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
+# Internationalization
 
 TIME_ZONE = "Europe/Moscow"
 
@@ -121,3 +128,4 @@ SIMPLE_JWT = {
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 EMAIL = 'v-0903@yandex.ru' #заменить на что-то более подходящее под цели проекта
+
