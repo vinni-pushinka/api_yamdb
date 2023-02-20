@@ -3,6 +3,8 @@ from rest_framework import viewsets
 
 from reviews.models import Category, Comment, Genre, Review, Title
 from .serializers import CommentSerializer, ReviewSerializer
+from rest_framework.pagination import LimitOffsetPagination
+
 
 class CategorytViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
@@ -23,6 +25,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     # Ограничение доступа
     permission_classes = ()
+    # Подключаем возможность пагинации
+    pagination_class = LimitOffsetPagination
 
     def get_title(self):
         """Получить Title (Произведение) по title_id."""
@@ -49,6 +53,8 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     # Ограничение доступа
     permission_classes = ()
+    # Подключаем возможность пагинации
+    pagination_class = LimitOffsetPagination
 
     def get_review(self):
         """Получить Review (Отзыв) по review_id."""
