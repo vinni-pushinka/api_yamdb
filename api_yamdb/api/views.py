@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import viewsets, status, filters
+from .mixins import CLDViewSet
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
@@ -91,7 +92,7 @@ def obtain_token(request):
     )
 
 
-class CategorytViewSet(viewsets.ModelViewSet):
+class CategorytViewSet(CLDViewSet):
     """ViewSet для модели Category (Категории)."""
 
     queryset = Category.objects.all()
@@ -105,7 +106,7 @@ class CategorytViewSet(viewsets.ModelViewSet):
         return get_object_or_404(self.queryset, slug=self.kwargs["slug"])
 
 
-class GenreViewSet(viewsets.ModelViewSet):
+class GenreViewSet(CLDViewSet):
     """ViewSet для модели Genre (Жанры)."""
 
     queryset = Genre.objects.all()
