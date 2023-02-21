@@ -11,8 +11,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class SignUpSerializer(serializers.ModelSerializer):
-    username = serializers.RegexField(max_length=150, regex=r"^[\w.@+-]+")
-    email = serializers.EmailField()
+    username = serializers.RegexField(max_length=150, regex=r"^[\w.@+-]")
+    email = serializers.EmailField(max_length=254)
 
     class Meta:
         model = User
@@ -27,7 +27,7 @@ class SignUpSerializer(serializers.ModelSerializer):
 
 
 class ObtainTokenSerializer(serializers.ModelSerializer):
-    username = serializers.RegexField(max_length=150, regex=r"^[\w.@+-]+")
+    username = serializers.RegexField(max_length=150, regex=r"^[\w.@+-]")
     confirmation_code = serializers.CharField(max_length=150)
 
     class Meta:

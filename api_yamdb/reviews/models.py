@@ -1,5 +1,5 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
 
 USER = "user"
@@ -15,7 +15,12 @@ ROLES = (
 
 class User(AbstractUser):
     username = models.CharField(
-        max_length=150, unique=True, verbose_name="Логин"
+        max_length=150, 
+        unique=True, 
+        verbose_name="Логин", 
+        validators=[RegexValidator(
+            regex=r'^[\w.@+-]+$',
+            message='Допустимые символы: буквы, цифры и @/./+/-/_')]
     )
     email = models.EmailField(
         max_length=254, unique=True, verbose_name="Почта"
