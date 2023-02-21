@@ -15,9 +15,9 @@ ROLES = (
 
 class User(AbstractUser):
     username = models.CharField(
-        max_length=150, 
-        unique=True, 
-        verbose_name="Логин", 
+        max_length=150,
+        unique=True,
+        verbose_name="Логин",
         validators=[RegexValidator(
             regex=r'^[\w.@+-]+$',
             message='Допустимые символы: буквы, цифры и @/./+/-/_')]
@@ -34,6 +34,12 @@ class User(AbstractUser):
     bio = models.TextField(blank=True, verbose_name="Биография")
     role = models.CharField(
         max_length=255, choices=ROLES, default=USER, verbose_name="Роль"
+    )
+    confirmation_code = models.CharField(
+        verbose_name='Токен пользователя',
+        max_length=100,
+        blank=True,
+        null=True,
     )
 
     class Meta:
@@ -149,7 +155,16 @@ class Review(models.Model):
     class Meta:
         verbose_name = "Отзыв"
         verbose_name_plural = "Отзывы"
-        ordering = ["pub_date"]
+        ordering = ['-pub_date', ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=['title', 'author'],
+                name='unique_review',
+            ),
+        ]
+
+    def __str__(self):
+        return f'{self.title}, {self.score}, {self.author}'
 
 
 class Comment(models.Model):
@@ -181,3 +196,6 @@ class Comment(models.Model):
         verbose_name = "Комментарий"
         verbose_name_plural = "Комментарии"
         ordering = ["pub_date"]
+
+    def __str__(self):
+        return self.text

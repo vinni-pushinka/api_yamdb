@@ -7,7 +7,9 @@ from reviews.models import Category, Genre, Title, User, Comment, Review
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = "__all__"
+        fields = (
+            'username', 'email', 'first_name', 'last_name', 'bio', 'role',
+        )
 
 
 class SignUpSerializer(serializers.ModelSerializer):
@@ -18,17 +20,25 @@ class SignUpSerializer(serializers.ModelSerializer):
         model = User
         fields = ("username", "email")
 
-    def validate_username(self, value):
-        if value == "me":
+    def validate(self, data):
+        if data['username'] == 'me':
             raise serializers.ValidationError(
-                "Использовать имя 'me' в качестве `username` запрещено."
+                "Использовать имя 'me' в качестве username запрещено!"
             )
-        return value
+        # if User.objects.filter(username=data['username']):
+        #     raise serializers.ValidationError(
+        #         "Использовать имя 'me' в качестве username запрещено!"
+        #     )
+        # if User.objects.filter(email=data['email']):
+        #     raise serializers.ValidationError(
+        #         "Использовать имя 'me' в качестве username запрещено!"
+        #     )
+        return data
 
 
 class ObtainTokenSerializer(serializers.ModelSerializer):
-    username = serializers.RegexField(max_length=150, regex=r"^[\w.@+-]")
-    confirmation_code = serializers.CharField(max_length=150)
+    username = serializers.CharField()
+    confirmation_code = serializers.CharField()
 
     class Meta:
         model = User
@@ -89,35 +99,20 @@ class TitleWriteSerializer(TitleSerializer):
     )
 
 
-class CommentSerializer(serializers.ModelSerializer):
-    """Сериализатор модели Comment (Комментарий)."""
-
-    author = SlugRelatedField(
-        slug_field="username",
-        read_only=True,
-    )
-
-    class Meta:
-        # Определение связанной модели
-        model = Comment
-        # Определение полей модели для работы серилизатора
-        fields = "all"
-
-
 class ReviewSerializer(serializers.ModelSerializer):
     """Сериализатор модели Review (Отзыв)."""
 
     author = SlugRelatedField(
         slug_field="username",
         read_only=True,
-        # default=serializers.CurrentUserDefault(),
+        default=serializers.CurrentUserDefault(),
     )
 
     class Meta:
         # Определение связанной модели
         model = Review
         # Определение полей модели для работы серилизатора
-        fields = "all"
+        fields = ('id', 'title', 'text', 'author', 'score', 'pub_date')
         # Проверка уникальности комбинации при создании подписки
         validators = [
             UniqueTogetherValidator(
@@ -136,8 +131,23 @@ class ReviewSerializer(serializers.ModelSerializer):
         if self.context["request"].method == "POST":
             author = self.context["view"].request.user
             title = self.context["view"].kwargs["title_id"]
-            if Review.objects.filter(author=author, title_id=title).exists():
+            if Review.objects.filter(author=author, title=title).exists():
                 raise serializers.ValidationError(
                     "Одно произведение - один отзыв!"
                 )
         return data
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    """Сериализатор модели Comment (Комментарий)."""
+
+    author = SlugRelatedField(
+        slug_field="username",
+        read_only=True,
+    )
+
+    class Meta:
+        # Определение связанной модели
+        model = Comment
+        # Определение полей модели для работы серилизатора
+        fields = ('id', 'text', 'author', 'pub_date', 'review')
