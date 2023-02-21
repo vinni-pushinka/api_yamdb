@@ -4,6 +4,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework import viewsets, status, filters
 from .mixins import CLDViewSet
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -12,7 +13,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action, api_view, permission_classes
 
 from reviews.models import Category, Genre, Review, Title, User
-from api.permissions import IsAdminOrReadOnly
+from api.permissions import IsAdminOrReadOnly, IsAdmin
 from api.serializers import (
     UserSerializer,
     SignUpSerializer,
@@ -33,8 +34,12 @@ from .serializers import (
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsAdminOrReadOnly, IsAuthenticated)
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ("username",)
+    lookup_field = "username"
+    pagination_class = LimitOffsetPagination
+    http_method_names = ['get', 'post', 'patch', 'delete']
 
     @action(
         methods=["get", "patch"],
@@ -43,16 +48,18 @@ class UserViewSet(viewsets.ModelViewSet):
         url_path="me",
     )
     def my_profile(self, request):
+        user = get_object_or_404(User, username=request.user.username)
+
         if request.method == "GET":
-            serializer = UserSerializer(request.user)
+            serializer = UserSerializer(user)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         if request.method == "PATCH":
             serializer = UserSerializer(
-                request.user, data=request.data, partial=True
+                user, data=request.data, partial=True
             )
             serializer.is_valid(raise_exception=True)
-            serializer.save
+            serializer.save(role=request.user.role)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -61,11 +68,12 @@ class UserViewSet(viewsets.ModelViewSet):
 def sign_up(request):
     serializer = SignUpSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    username = serializer.validated_data["username"]
-    email = serializer.validated_data["email"]
-    new_user = User.objects.filter(username=username, email=email)
-    confirmation_code = default_token_generator.make_token(new_user)
-    new_user.save()
+    username = serializer.validated_data.get('username')
+    email = serializer.validated_data.get('email')
+    serializer.save()
+    confirmation_code = default_token_generator.make_token(
+        User.objects.get(email=email, username=username)
+    )
     send_mail(
         "Код подтверждения",
         f"Здравствуйте! Ваш код подтверждения: {confirmation_code}",
@@ -73,7 +81,7 @@ def sign_up(request):
         [f"{email}"],
         fail_silently=False,
     )
-    return Response(serializer.date, status=status.HTTP_200_OK)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])
@@ -81,8 +89,8 @@ def sign_up(request):
 def obtain_token(request):
     serializer = ObtainTokenSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    username = serializer.validated_data["username"]
-    confirmation_code = serializer.validated_data["confirmation_code"]
+    username = serializer.validated_data.get('username')
+    confirmation_code = serializer.validated_data.get("confirmation_code")
     new_user = get_object_or_404(User, username=username)
     if confirmation_code != new_user.confirmation_code:
         return Response(status=status.HTTP_400_BAD_REQUEST)
