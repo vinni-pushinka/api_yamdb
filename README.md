@@ -63,8 +63,8 @@ GET `/api/v1/titles/{title_id}/reviews/`
 GET `/api/v1/ /titles/{title_id}/reviews/{review_id}/comments/`
 
 ### Команда проекта:
-[Andrei Bodrov](https://github.com/awesky): отзывы, комментарии, рейтинг произведений;
-[Dmitriy Mayorov](https://github.com/dmay92): произведения,   категории,  жанры, работа с базой;
-[Valeria Goran](https://github.com/vinni-pushinka): система регистрации и аутентификации, права доступа, работа с токеном, система подтверждения через e-mail.
+- [Andrei Bodrov](https://github.com/awesky): отзывы, комментарии, рейтинг произведений;
+- [Dmitriy Mayorov](https://github.com/dmay92): произведения,   категории,  жанры, работа с базой;
+- [Valeria Goran](https://github.com/vinni-pushinka): система регистрации и аутентификации, права доступа, работа с токеном, система подтверждения через e-mail.
 
 > Written with [StackEdit](https://stackedit.io/).
