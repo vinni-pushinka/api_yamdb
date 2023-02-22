@@ -1,14 +1,11 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import (
-    MaxValueValidator,
-    MinValueValidator,
-    RegexValidator,
-)
+from django.core.validators import (MaxValueValidator, MinValueValidator,
+                                    RegexValidator)
 from django.db import models
 
 
 class User(AbstractUser):
-    """Модель пользователя"""
+    """Модель пользователя."""
 
     USER = "user"
     MODERATOR = "moderator"
@@ -60,7 +57,7 @@ class User(AbstractUser):
 
 
 class Category(models.Model):
-    """Модель категории"""
+    """Модель категории."""
 
     name = models.CharField(
         max_length=256,
@@ -80,7 +77,7 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    """Модель жанра"""
+    """Модель жанра."""
 
     name = models.CharField(max_length=256, verbose_name="Название жанра")
     slug = models.SlugField(
@@ -96,7 +93,7 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    """Модель произведения"""
+    """Модель произведения."""
 
     name = models.CharField(
         max_length=256, verbose_name="Название произведения"
@@ -128,7 +125,7 @@ class Title(models.Model):
 
 
 class GenreTitle(models.Model):
-    """Модель для связи жанр-произведение"""
+    """Модель для связи жанр-произведение."""
 
     title = models.ForeignKey(Title, on_delete=models.CASCADE)
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
@@ -138,7 +135,7 @@ class GenreTitle(models.Model):
 
 
 class Review(models.Model):
-    """Модель отзыва"""
+    """Модель отзыва."""
 
     title = models.ForeignKey(
         Title,
@@ -184,7 +181,7 @@ class Review(models.Model):
 
 
 class Comment(models.Model):
-    """Модель комментария к отзыву"""
+    """Модель комментария к отзыву."""
 
     author = models.ForeignKey(
         User,

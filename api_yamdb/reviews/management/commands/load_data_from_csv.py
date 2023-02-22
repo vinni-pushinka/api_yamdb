@@ -1,16 +1,9 @@
 from csv import DictReader
+
 from django.conf import settings
 from django.core.management import BaseCommand
-
-from reviews.models import (
-    Category,
-    Comment,
-    Genre,
-    GenreTitle,
-    Review,
-    Title,
-    User,
-)
+from reviews.models import (Category, Comment, Genre, GenreTitle, Review,
+                            Title, User)
 
 
 def obj_from_id(model, id):
@@ -18,7 +11,7 @@ def obj_from_id(model, id):
 
 
 class Command(BaseCommand):
-    """Служебная команда для загрузки данных в базу из csv"""
+    """Служебная команда для загрузки данных в базу из csv."""
 
     help = "load people from csv"
 

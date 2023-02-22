@@ -2,7 +2,7 @@ from rest_framework import permissions
 
 
 class UPermissions(permissions.BasePermission):
-    """Настройка прав для Пользователей"""
+    """Настройка прав для Пользователей."""
 
     def has_permission(self, request, view):
         return request.user.is_authenticated and (
@@ -11,7 +11,7 @@ class UPermissions(permissions.BasePermission):
 
 
 class CGTPermissions(permissions.BasePermission):
-    """Настройка прав для Произведений, Жанров и Категорий"""
+    """Настройка прав для Произведений, Жанров и Категорий."""
 
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
@@ -24,7 +24,7 @@ class CGTPermissions(permissions.BasePermission):
 
 
 class RCPermissions(permissions.BasePermission):
-    """Настройка прав для Отзывов и Комментариям к ним"""
+    """Настройка прав для Отзывов и Комментариев к ним."""
 
     def has_permission(self, request, view):
         return (

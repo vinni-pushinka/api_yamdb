@@ -1,40 +1,28 @@
-from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-
-from rest_framework import viewsets, status, filters
-from .mixins import CLDViewSet
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.response import Response
+from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
-
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 from reviews.models import Category, Genre, Review, Title, User
-from .permissions import (
-    CGTPermissions,
-    UPermissions,
-    RCPermissions,
-)
-from .serializers import (
-    UserSerializer,
-    SignUpSerializer,
-    ObtainTokenSerializer,
-)
+
 from api_yamdb.settings import EMAIL
+
 from .filters import TitleFilter
-from .serializers import (
-    CategorySerializer,
-    GenreSerializer,
-    TitleReadSerializer,
-    TitleWriteSerializer,
-    CommentSerializer,
-    ReviewSerializer,
-)
+from .mixins import CLDViewSet
+from .permissions import CGTPermissions, RCPermissions, UPermissions
+from .serializers import (CategorySerializer, CommentSerializer,
+                          GenreSerializer, ObtainTokenSerializer,
+                          ReviewSerializer, SignUpSerializer,
+                          TitleReadSerializer, TitleWriteSerializer,
+                          UserSerializer)
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    """ViewSet модели Пользователей"""
+    """ViewSet модели Пользователей."""
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -67,7 +55,7 @@ class UserViewSet(viewsets.ModelViewSet):
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def sign_up(request):
-    """Функция авторизации"""
+    """Функция добавления нового пользователя."""
     serializer = SignUpSerializer(data=request.data)
     if User.objects.filter(
         username=request.data.get("username"), email=request.data.get("email")
@@ -100,7 +88,7 @@ def sign_up(request):
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def obtain_token(request):
-    """Функция получения пользователем токена"""
+    """Функция получения пользователем токена."""
     serializer = ObtainTokenSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     username = serializer.validated_data.get("username")
@@ -115,7 +103,7 @@ def obtain_token(request):
 
 
 class CategorytViewSet(CLDViewSet):
-    """ViewSet модели Категорий"""
+    """ViewSet модели Категорий."""
 
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -129,7 +117,7 @@ class CategorytViewSet(CLDViewSet):
 
 
 class GenreViewSet(CLDViewSet):
-    """ViewSet модели Жарнов"""
+    """ViewSet модели Жанров."""
 
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
@@ -145,7 +133,7 @@ class GenreViewSet(CLDViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    """ViewSet модели Произведений"""
+    """ViewSet модели Произведений."""
 
     queryset = Title.objects.all()
     serializer_class = TitleReadSerializer
@@ -160,7 +148,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    """ViewSet модели Отзывов"""
+    """ViewSet модели Отзывов."""
 
     serializer_class = ReviewSerializer
     permission_classes = (RCPermissions,)
@@ -176,7 +164,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    """ViewSet модели Комментариев к отзывам"""
+    """ViewSet модели Комментариев к отзывам."""
 
     serializer_class = CommentSerializer
     permission_classes = (RCPermissions,)
