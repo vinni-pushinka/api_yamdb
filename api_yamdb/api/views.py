@@ -129,11 +129,8 @@ class GenreViewSet(CLDViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     """ViewSet для модели Title (Произведения)."""
 
-    queryset = (
-        Title.objects.all()
-        .annotate(Avg("reviews__score"))
-        .prefetch_related("category", "genre")
-    )
+    queryset = Title.objects.all()
+    # .prefetch_related('category', 'genre')
     serializer_class = TitleReadSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter

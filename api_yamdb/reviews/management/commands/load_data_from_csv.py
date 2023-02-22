@@ -13,72 +13,27 @@ from reviews.models import (
 )
 
 
-# def get_path(file_name):
-#     return f'{settings.BASE_DIR}/static/data/{file_name}.csv'
+TABLES_DICT = {
+    User: 'users.csv',
+    Category: 'category.csv',
+    Genre: 'genre.csv',
+    Title: 'titles.csv',
+    Review: 'review.csv',
+    Comment: 'comments.csv',
+    GenreTitle: 'genre_title.csv'
+}
 
 
 class Command(BaseCommand):
-    help = "load people from csv"
+    help = 'Load data from csv files'
 
-    def handle(self, *args, **options):
-        for row in DictReader(
-            open(f"{settings.BASE_DIR}/static/data/users.csv", encoding="utf8")
-        ):
-            users = User(
-                id=row["id"],
-                username=row["username"],
-                email=row["email"],
-                role=row["role"],
-                bio=row["bio"],
-                first_name=row["first_name"],
-                last_name=row["last_name"],
-            )
-            users.save()
-        for row in DictReader(
-            open("static/data/category.csv", encoding="utf8")
-        ):
-            category = Category(
-                id=row["id"], name=row["name"], slug=row["slug"]
-            )
-            category.save()
-        for row in DictReader(open("static/data/genre.csv", encoding="utf8")):
-            genre = Genre(id=row["id"], name=row["name"], slug=row["slug"])
-            genre.save()
-        for row in DictReader(open("static/data/titles.csv", encoding="utf8")):
-            titles = Title(
-                id=row["id"],
-                name=row["name"],
-                year=row["year"],
-                category=row["category"],
-            )
-            titles.save()
-        for row in DictReader(
-            open("static/data/genre_title.csv", encoding="utf8")
-        ):
-            genre_title = GenreTitle(
-                id=row["id"],
-                title_id=row["title_id"],
-                genre_id=row["genre_id"],
-            )
-            genre_title.save()
-        for row in DictReader(open("static/data/review.csv", encoding="utf8")):
-            review = Review(
-                id=row["id"],
-                title=row["title_id"],
-                text=row["text"],
-                author=row["author"],
-                score=["score"],
-                pub_date=["pub_date"],
-            )
-            review.save()
-        for row in DictReader(
-            open("static/data/comments.csv", encoding="utf8")
-        ):
-            comments = Comment(
-                id=row["id"],
-                review=row["review_id"],
-                text=row["text"],
-                author=row["author"],
-                pub_date=["pub_date"],
-            )
-            comments.save()
+    def handle(self, *args, **kwargs):
+        for model, base in TABLES_DICT.items():
+            with open(
+                f'{settings.BASE_DIR}/static/data/{base}',
+                'r', encoding='utf-8'
+            ) as csv_file:
+                reader = DictReader(csv_file)
+                model.objects.bulk_create(model(**data) for data in reader)
+
+        self.stdout.write(self.style.SUCCESS('Successfully load data'))
