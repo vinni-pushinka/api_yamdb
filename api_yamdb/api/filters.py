@@ -4,6 +4,8 @@ from reviews.models import Title
 
 
 class TitleFilter(FilterSet):
+    """Фильтрация произведений"""
+
     name = CharFilter(field_name="name", lookup_expr="contains")
     year = NumberFilter(field_name="year")
     category = CharFilter(field_name="category__slug")

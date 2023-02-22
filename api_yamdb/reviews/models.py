@@ -6,18 +6,20 @@ from django.core.validators import (
 )
 from django.db import models
 
-USER = "user"
-MODERATOR = "moderator"
-ADMIN = "admin"
-
-ROLES = (
-    (USER, "user"),
-    (MODERATOR, "moderator"),
-    (ADMIN, "admin"),
-)
-
 
 class User(AbstractUser):
+    """Модель пользователя"""
+
+    USER = "user"
+    MODERATOR = "moderator"
+    ADMIN = "admin"
+
+    ROLES = (
+        (USER, "user"),
+        (MODERATOR, "moderator"),
+        (ADMIN, "admin"),
+    )
+
     username = models.CharField(
         max_length=150,
         unique=True,
@@ -58,6 +60,8 @@ class User(AbstractUser):
 
 
 class Category(models.Model):
+    """Модель категории"""
+
     name = models.CharField(
         max_length=256,
         default="Отсутствует",
@@ -76,6 +80,8 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
+    """Модель жанра"""
+
     name = models.CharField(max_length=256, verbose_name="Название жанра")
     slug = models.SlugField(
         max_length=50, unique=True, verbose_name="Slug жанра"
@@ -90,6 +96,8 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
+    """Модель произведения"""
+
     name = models.CharField(
         max_length=256, verbose_name="Название произведения"
     )
@@ -120,6 +128,8 @@ class Title(models.Model):
 
 
 class GenreTitle(models.Model):
+    """Модель для связи жанр-произведение"""
+
     title = models.ForeignKey(Title, on_delete=models.CASCADE)
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
 
@@ -128,11 +138,10 @@ class GenreTitle(models.Model):
 
 
 class Review(models.Model):
-    """Модель Отзыва на Title (Произведение)."""
+    """Модель отзыва"""
 
     title = models.ForeignKey(
         Title,
-        # Удаление Отзыва при удалении Произведения
         on_delete=models.CASCADE,
         related_name="reviews",
         verbose_name="Произведение",
@@ -140,7 +149,6 @@ class Review(models.Model):
     )
     author = models.ForeignKey(
         User,
-        # Удаление Отзыва при удалении Автора
         on_delete=models.CASCADE,
         related_name="reviews",
         verbose_name="Автор",
@@ -176,18 +184,16 @@ class Review(models.Model):
 
 
 class Comment(models.Model):
-    """Модель Комментария к Review (Отзыв)."""
+    """Модель комментария к отзыву"""
 
     author = models.ForeignKey(
         User,
-        # Удаление Комментария при удалении Автора
         on_delete=models.CASCADE,
         related_name="comments",
         verbose_name="username автора комментария",
     )
     review = models.ForeignKey(
         Review,
-        # Удаление Комментария при удалении Отзыва
         on_delete=models.CASCADE,
         related_name="comments",
         verbose_name="Комментарий",

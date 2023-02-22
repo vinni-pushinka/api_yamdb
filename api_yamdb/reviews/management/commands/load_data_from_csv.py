@@ -18,6 +18,8 @@ def obj_from_id(model, id):
 
 
 class Command(BaseCommand):
+    """Служебная команда для загрузки данных в базу из csv"""
+
     help = "load people from csv"
 
     def handle(self, *args, **options):

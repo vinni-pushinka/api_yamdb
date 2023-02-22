@@ -1,4 +1,3 @@
-from django.db.models import Avg
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
@@ -13,9 +12,9 @@ from rest_framework.decorators import action, api_view, permission_classes
 
 from reviews.models import Category, Genre, Review, Title, User
 from .permissions import (
-    IsAdminOrReadOnly,
-    IsAdmin,
-    IsAuthorAdminModeratorOrReadOnly,
+    CGTPermissions,
+    UPermissions,
+    RCPermissions,
 )
 from .serializers import (
     UserSerializer,
@@ -35,9 +34,11 @@ from .serializers import (
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    """ViewSet модели Пользователей"""
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (IsAdmin,)
+    permission_classes = (UPermissions,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ("username",)
     lookup_field = "username"
@@ -66,17 +67,31 @@ class UserViewSet(viewsets.ModelViewSet):
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def sign_up(request):
+    """Функция авторизации"""
     serializer = SignUpSerializer(data=request.data)
+    if User.objects.filter(
+        username=request.data.get("username"), email=request.data.get("email")
+    ).exists():
+        user, created = User.objects.get_or_create(
+            username=request.data.get("username")
+        )
+        if created is False:
+            confirmation_code = default_token_generator.make_token(user)
+            user.confirmation_code = confirmation_code
+            user.save()
+            return Response("Токен обновлён", status=status.HTTP_200_OK)
     serializer.is_valid(raise_exception=True)
-    username = serializer.validated_data.get("username")
-    email = serializer.validated_data.get("email")
-    user, created = User.objects.get_or_create(username=username, email=email)
-    token = default_token_generator.make_token(user)
+    serializer.save()
+    user = User.objects.get(
+        username=request.data.get("username"), email=request.data.get("email")
+    )
+    confirmation_code = default_token_generator.make_token(user)
+    user.confirmation_code = confirmation_code
     send_mail(
         "Код подтверждения",
-        f"Здравствуйте! Ваш код подтверждения: {token}",
+        f"Здравствуйте! Ваш код подтверждения: {confirmation_code}",
         EMAIL,
-        [f"{email}"],
+        [f"{request.data.get('email')}"],
         fail_silently=False,
     )
     return Response(serializer.data, status=status.HTTP_200_OK)
@@ -85,6 +100,7 @@ def sign_up(request):
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def obtain_token(request):
+    """Функция получения пользователем токена"""
     serializer = ObtainTokenSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     username = serializer.validated_data.get("username")
@@ -99,21 +115,21 @@ def obtain_token(request):
 
 
 class CategorytViewSet(CLDViewSet):
-    """ViewSet для модели Category (Категории)."""
+    """ViewSet модели Категорий"""
 
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ("name",)
     lookup_field = "slug"
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (CGTPermissions,)
 
     def get_object(self):
         return get_object_or_404(self.queryset, slug=self.kwargs["slug"])
 
 
 class GenreViewSet(CLDViewSet):
-    """ViewSet для модели Genre (Жанры)."""
+    """ViewSet модели Жарнов"""
 
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
@@ -122,20 +138,20 @@ class GenreViewSet(CLDViewSet):
     filterset_fields = ("slug",)
     lookup_field = "slug"
     ordering = ("slug",)
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (CGTPermissions,)
 
     def get_object(self):
         return get_object_or_404(self.queryset, slug=self.kwargs["slug"])
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    """ViewSet для модели Title (Произведения)."""
+    """ViewSet модели Произведений"""
 
     queryset = Title.objects.all()
     serializer_class = TitleReadSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (CGTPermissions,)
 
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):
@@ -144,12 +160,10 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    """ViewSet для модели Review (Отзыв)."""
+    """ViewSet модели Отзывов"""
 
-    # Указание сериализатора для валидации и сериализации
     serializer_class = ReviewSerializer
-    # Ограничение доступа
-    permission_classes = (IsAuthorAdminModeratorOrReadOnly,)
+    permission_classes = (RCPermissions,)
 
     def get_queryset(self):
         title = get_object_or_404(Title, id=self.kwargs.get("title_id"))
@@ -162,12 +176,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    """ViewSet для модели Comment (Комментарий)."""
+    """ViewSet модели Комментариев к отзывам"""
 
-    # Указание сериализатора для валидации и сериализации
     serializer_class = CommentSerializer
-    # Ограничение доступа
-    permission_classes = (IsAuthorAdminModeratorOrReadOnly,)
+    permission_classes = (RCPermissions,)
 
     def get_queryset(self):
         review = get_object_or_404(Review, id=self.kwargs.get("review_id"))

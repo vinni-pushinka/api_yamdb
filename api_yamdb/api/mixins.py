@@ -7,4 +7,6 @@ class CLDViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
+    """Миксин модель для Жанров и Категорий"""
+
     pass

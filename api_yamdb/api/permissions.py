@@ -1,14 +1,18 @@
 from rest_framework import permissions
 
 
-class IsAdmin(permissions.BasePermission):
+class UPermissions(permissions.BasePermission):
+    """Настройка прав для Пользователей"""
+
     def has_permission(self, request, view):
         return request.user.is_authenticated and (
             request.user.role == "admin" or request.user.is_superuser
         )
 
 
-class IsAdminOrReadOnly(permissions.BasePermission):
+class CGTPermissions(permissions.BasePermission):
+    """Настройка прав для Произведений, Жанров и Категорий"""
+
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
@@ -19,7 +23,9 @@ class IsAdminOrReadOnly(permissions.BasePermission):
         return False
 
 
-class IsAuthorAdminModeratorOrReadOnly(permissions.BasePermission):
+class RCPermissions(permissions.BasePermission):
+    """Настройка прав для Отзывов и Комментариям к ним"""
+
     def has_permission(self, request, view):
         return (
             request.method in permissions.SAFE_METHODS
