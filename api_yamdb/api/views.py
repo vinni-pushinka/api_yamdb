@@ -12,7 +12,11 @@ from rest_framework.response import Response
 from rest_framework.decorators import action, api_view, permission_classes
 
 from reviews.models import Category, Genre, Review, Title, User
-from .permissions import IsAdminOrReadOnly, IsAdmin, IsAuthorAdminModeratorOrReadOnly
+from .permissions import (
+    IsAdminOrReadOnly,
+    IsAdmin,
+    IsAuthorAdminModeratorOrReadOnly,
+)
 from .serializers import (
     UserSerializer,
     SignUpSerializer,
@@ -37,7 +41,7 @@ class UserViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ("username",)
     lookup_field = "username"
-    http_method_names = ['get', 'post', 'patch', 'delete']
+    http_method_names = ["get", "post", "patch", "delete"]
 
     @action(
         methods=["get", "patch"],
@@ -53,9 +57,7 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         if request.method == "PATCH":
-            serializer = UserSerializer(
-                user, data=request.data, partial=True
-            )
+            serializer = UserSerializer(user, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save(role=request.user.role)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -66,8 +68,8 @@ class UserViewSet(viewsets.ModelViewSet):
 def sign_up(request):
     serializer = SignUpSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    username = serializer.validated_data.get('username')
-    email = serializer.validated_data.get('email')
+    username = serializer.validated_data.get("username")
+    email = serializer.validated_data.get("email")
     user, created = User.objects.get_or_create(username=username, email=email)
     token = default_token_generator.make_token(user)
     send_mail(
@@ -85,7 +87,7 @@ def sign_up(request):
 def obtain_token(request):
     serializer = ObtainTokenSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    username = serializer.validated_data.get('username')
+    username = serializer.validated_data.get("username")
     confirmation_code = serializer.validated_data.get("confirmation_code")
     new_user = get_object_or_404(User, username=username)
     if confirmation_code != new_user.confirmation_code:
@@ -130,7 +132,6 @@ class TitleViewSet(viewsets.ModelViewSet):
     """ViewSet для модели Title (Произведения)."""
 
     queryset = Title.objects.all()
-    # .prefetch_related('category', 'genre')
     serializer_class = TitleReadSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
@@ -151,11 +152,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthorAdminModeratorOrReadOnly,)
 
     def get_queryset(self):
-        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
+        title = get_object_or_404(Title, id=self.kwargs.get("title_id"))
         return title.reviews.all()
 
     def perform_create(self, serializer):
-        title_id = self.kwargs.get('title_id')
+        title_id = self.kwargs.get("title_id")
         title = get_object_or_404(Title, id=title_id)
         serializer.save(title=title, author=self.request.user)
 
@@ -169,9 +170,9 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthorAdminModeratorOrReadOnly,)
 
     def get_queryset(self):
-        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
+        review = get_object_or_404(Review, id=self.kwargs.get("review_id"))
         return review.comments.all()
 
     def perform_create(self, serializer):
-        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
+        review = get_object_or_404(Review, id=self.kwargs.get("review_id"))
         serializer.save(author=self.request.user, review=review)

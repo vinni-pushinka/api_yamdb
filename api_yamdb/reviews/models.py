@@ -1,5 +1,9 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator,
+    RegexValidator,
+)
 from django.db import models
 
 USER = "user"
@@ -18,9 +22,12 @@ class User(AbstractUser):
         max_length=150,
         unique=True,
         verbose_name="Логин",
-        validators=[RegexValidator(
-            regex=r'^[\w.@+-]+$',
-            message='Допустимые символы: буквы, цифры и @/./+/-/_')]
+        validators=[
+            RegexValidator(
+                regex=r"^[\w.@+-]+$",
+                message="Допустимые символы: буквы, цифры и @/./+/-/_",
+            )
+        ],
     )
     email = models.EmailField(
         max_length=254, unique=True, verbose_name="Почта"
@@ -36,7 +43,7 @@ class User(AbstractUser):
         max_length=255, choices=ROLES, default=USER, verbose_name="Роль"
     )
     confirmation_code = models.CharField(
-        verbose_name='Токен пользователя',
+        verbose_name="Токен пользователя",
         max_length=100,
         blank=True,
         null=True,
@@ -100,7 +107,6 @@ class Title(models.Model):
         Category,
         on_delete=models.SET_NULL,
         null=True,
-        blank=True,
         related_name="titles",
         verbose_name="Slug категории",
     )
@@ -114,8 +120,8 @@ class Title(models.Model):
 
 
 class GenreTitle(models.Model):
-    title_id = models.ForeignKey(Title, on_delete=models.CASCADE)
-    genre_id = models.ForeignKey(Genre, on_delete=models.CASCADE)
+    title = models.ForeignKey(Title, on_delete=models.CASCADE)
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.title} {self.genre}"
@@ -155,16 +161,18 @@ class Review(models.Model):
     class Meta:
         verbose_name = "Отзыв"
         verbose_name_plural = "Отзывы"
-        ordering = ['-pub_date', ]
+        ordering = [
+            "-pub_date",
+        ]
         constraints = [
             models.UniqueConstraint(
-                fields=['title', 'author'],
-                name='unique_review',
+                fields=["title", "author"],
+                name="unique_review",
             ),
         ]
 
     def __str__(self):
-        return f'{self.title}, {self.score}, {self.author}'
+        return f"{self.title}, {self.score}, {self.author}"
 
 
 class Comment(models.Model):

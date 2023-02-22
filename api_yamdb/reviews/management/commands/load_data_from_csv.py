@@ -14,26 +14,27 @@ from reviews.models import (
 
 
 TABLES_DICT = {
-    User: 'users.csv',
-    Category: 'category.csv',
-    Genre: 'genre.csv',
-    Title: 'titles.csv',
-    Review: 'review.csv',
-    Comment: 'comments.csv',
-    GenreTitle: 'genre_title.csv'
+    User: "users.csv",
+    Category: "category.csv",
+    Genre: "genre.csv",
+    Title: "titles.csv",
+    Review: "review.csv",
+    Comment: "comments.csv",
+    GenreTitle: "genre_title.csv",
 }
 
 
 class Command(BaseCommand):
-    help = 'Load data from csv files'
+    help = "Load data from csv files"
 
     def handle(self, *args, **kwargs):
         for model, base in TABLES_DICT.items():
             with open(
-                f'{settings.BASE_DIR}/static/data/{base}',
-                'r', encoding='utf-8'
+                f"{settings.BASE_DIR}/static/data/{base}",
+                "r",
+                encoding="utf-8",
             ) as csv_file:
                 reader = DictReader(csv_file)
                 model.objects.bulk_create(model(**data) for data in reader)
 
-        self.stdout.write(self.style.SUCCESS('Successfully load data'))
+        self.stdout.write(self.style.SUCCESS("Successfully load data"))

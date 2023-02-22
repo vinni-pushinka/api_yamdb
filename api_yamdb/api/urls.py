@@ -20,7 +20,7 @@ router.register("categories", CategorytViewSet, basename="categories")
 router.register(
     r"titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments",
     CommentViewSet,
-    basename="comments"
+    basename="comments",
 )
 router.register(
     r"titles/(?P<title_id>\d+)/reviews",

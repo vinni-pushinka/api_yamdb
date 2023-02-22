@@ -10,7 +10,12 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'username', 'email', 'first_name', 'last_name', 'bio', 'role',
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "bio",
+            "role",
         )
 
 
@@ -23,7 +28,7 @@ class SignUpSerializer(serializers.ModelSerializer):
         fields = ("username", "email")
 
     def validate(self, data):
-        if data['username'] == 'me':
+        if data["username"] == "me":
             raise serializers.ValidationError(
                 "Использовать имя 'me' в качестве username запрещено!"
             )
@@ -71,8 +76,8 @@ class TitleSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
 
     def get_rating(self, obj):
-        rating = obj.reviews.aggregate(Avg('score', default=0))
-        return rating.get('score__avg')
+        rating = obj.reviews.aggregate(Avg("score", default=0))
+        return rating.get("score__avg")
 
     class Meta:
         model = Title
@@ -113,28 +118,26 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only=True,
         default=serializers.CurrentUserDefault(),
     )
-    title = SlugRelatedField(
-        slug_field='name',
-        read_only=True
-    )
+    title = SlugRelatedField(slug_field="name", read_only=True)
 
     def validate(self, data):
-        request = self.context['request']
-        title_id = self.context['view'].kwargs.get('title_id')
+        request = self.context["request"]
+        title_id = self.context["view"].kwargs.get("title_id")
         title = get_object_or_404(Title, pk=title_id)
-        if request.method == 'POST':
+        if request.method == "POST":
             if Review.objects.filter(
-                    title=title,
-                    author=request.user).exists():
+                title=title, author=request.user
+            ).exists():
                 raise serializers.ValidationError(
-                    'Допустимо не более 1 отзыва на произведение')
+                    "Допустимо не более 1 отзыва на произведение"
+                )
         return data
 
     class Meta:
         # Определение связанной модели
         model = Review
         # Определение полей модели для работы серилизатора
-        fields = ('id', 'title', 'text', 'author', 'score', 'pub_date')
+        fields = ("id", "title", "text", "author", "score", "pub_date")
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -144,12 +147,10 @@ class CommentSerializer(serializers.ModelSerializer):
         slug_field="username",
         read_only=True,
     )
-    review = serializers.ReadOnlyField(
-        source='review.id'
-    )
+    review = serializers.ReadOnlyField(source="review.id")
 
     class Meta:
         # Определение связанной модели
         model = Comment
         # Определение полей модели для работы серилизатора
-        fields = ('id', 'text', 'author', 'pub_date', 'review')
+        fields = ("id", "text", "author", "pub_date", "review")
