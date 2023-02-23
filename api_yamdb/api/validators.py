@@ -1,5 +1,4 @@
 from rest_framework.exceptions import ValidationError
-
 from reviews.models import User
 
 

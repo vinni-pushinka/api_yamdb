@@ -54,9 +54,41 @@ POST (c параметрами `email` и `username`)
 - **Получение пользователем токена:**
 POST (с параметрами `username` и `confirmation_code`)
  `/api/v1/auth/token/`
+```
+{
+    "username": "testuser1",
+    "email": "testuser@gmail.com",
+    "confirmation_code": "bk3ma8-c56776265de7328a17ef39b9ae5c6ee2"
+}
+```
 В ответе на запрос пользователю приходит `token` (JWT-токен).
+```{
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ8.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc5Nzc3NjA5LCJqdGkiOiIxYmNlNzVkMDVhOGM0ZjcwODEyMWZkMjU3YjU4OGI2MiIsInVzZXJfaWQiOjJ8.OqelqpS-eLDjBHbKkZshSAQj0SEcOAO-z5oWEh5PGDQ"
+}
+```
 - **Получение списка жанров:**
 GET `/api/v1/genres/`
+```
+{
+    "count": 3,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "name": "Fiction",
+            "slug": "fiction"
+        },
+        {
+            "name": "Non-fiction",
+            "slug": "non-fiction"
+        },
+        {
+            "name": "Fairytales",
+            "slug": "fairytales"
+        }
+    ]
+}
+```
 - **Получение списка произведений:**
 GET `/api/v1/titles/`
 - **Получение списка отзывов:**
