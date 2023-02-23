@@ -2,6 +2,7 @@ from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
+
 from reviews.models import Category, Comment, Genre, Review, Title, User
 
 from .validators import validate_email, validate_username
@@ -139,8 +140,8 @@ class CommentSerializer(serializers.ModelSerializer):
         slug_field="username",
         read_only=True,
     )
-    review = serializers.ReadOnlyField(source="review.id")
 
     class Meta:
         model = Comment
         fields = ("id", "text", "author", "pub_date", "review")
+        read_only_fields = ("review",)

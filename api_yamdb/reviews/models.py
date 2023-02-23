@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import (MaxValueValidator, MinValueValidator,
                                     RegexValidator)
 from django.db import models
+from django.utils import timezone
 
 
 class User(AbstractUser):
@@ -55,6 +56,18 @@ class User(AbstractUser):
     def __str__(self) -> str:
         return self.username
 
+    @property
+    def is_admin(self):
+        return self.role == "admin"
+
+    @property
+    def is_moderator(self):
+        return self.role == "moderator"
+
+    @property
+    def is_user(self):
+        return self.role == "user"
+
 
 class Category(models.Model):
     """Модель категории."""
@@ -98,7 +111,10 @@ class Title(models.Model):
     name = models.CharField(
         max_length=256, verbose_name="Название произведения"
     )
-    year = models.PositiveSmallIntegerField(verbose_name="Год выпуска")
+    year = models.PositiveSmallIntegerField(
+        validators=[MaxValueValidator(timezone.now().year)],
+        verbose_name="Год выпуска",
+    )
     description = models.TextField(null=True, verbose_name="Описание")
 
     genre = models.ManyToManyField(
@@ -154,7 +170,7 @@ class Review(models.Model):
         verbose_name="Текст отзыва",
         help_text="Введите текст отзыва",
     )
-    score = models.IntegerField(
+    score = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(10)],
         verbose_name="Оценка",
     )

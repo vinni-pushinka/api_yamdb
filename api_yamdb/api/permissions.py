@@ -6,7 +6,7 @@ class UPermissions(permissions.BasePermission):
 
     def has_permission(self, request, view):
         return request.user.is_authenticated and (
-            request.user.role == "admin" or request.user.is_superuser
+            request.user.is_admin or request.user.is_superuser
         )
 
 
@@ -18,7 +18,7 @@ class CGTPermissions(permissions.BasePermission):
             return True
         if not request.user.is_authenticated:
             return False
-        if request.user.role == "admin" or request.user.is_superuser:
+        if request.user.is_admin or request.user.is_superuser:
             return True
         return False
 
@@ -36,6 +36,6 @@ class RCPermissions(permissions.BasePermission):
         return (
             request.method in permissions.SAFE_METHODS
             or obj.author == request.user
-            or request.user.role == "admin"
-            or request.user.role == "moderator"
+            or request.user.is_admin
+            or request.user.is_moderator
         )
