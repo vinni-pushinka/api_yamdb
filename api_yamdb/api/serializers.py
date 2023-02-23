@@ -9,7 +9,7 @@ from .validators import validate_email, validate_username
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """Сериализатор Пользователей"""
+    """Сериализатор Пользователей."""
 
     class Meta:
         model = User
@@ -24,7 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class SignUpSerializer(serializers.ModelSerializer):
-    """Сериализатор регистрации пользователей"""
+    """Сериализатор регистрации пользователей."""
 
     username = serializers.RegexField(
         max_length=150, regex=r"^[\w.@+-]", validators=[validate_username]
@@ -37,7 +37,7 @@ class SignUpSerializer(serializers.ModelSerializer):
 
 
 class ObtainTokenSerializer(serializers.ModelSerializer):
-    """Сериализатор получения пользователем токена"""
+    """Сериализатор получения пользователем токена."""
 
     username = serializers.CharField()
     confirmation_code = serializers.CharField()
@@ -48,7 +48,7 @@ class ObtainTokenSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    """Сериализатор Категорий"""
+    """Сериализатор Категорий."""
 
     class Meta:
         model = Category
@@ -66,7 +66,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    """Сериализатор Произведений основной"""
+    """Сериализатор Произведений основной."""
 
     rating = serializers.SerializerMethodField()
 
@@ -88,14 +88,14 @@ class TitleSerializer(serializers.ModelSerializer):
 
 
 class TitleReadSerializer(TitleSerializer):
-    """Сериализатор Произведений чтение"""
+    """Сериализатор Произведений чтение."""
 
     genre = GenreSerializer(read_only=True, many=True)
     category = CategorySerializer(read_only=True)
 
 
 class TitleWriteSerializer(TitleSerializer):
-    """Сериализатор Произведений запись"""
+    """Сериализатор Произведений запись."""
 
     category = serializers.SlugRelatedField(
         slug_field="slug", queryset=Category.objects.all(), required=False
@@ -106,7 +106,7 @@ class TitleWriteSerializer(TitleSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    """Сериализатор Отзывов"""
+    """Сериализатор Отзывов."""
 
     author = SlugRelatedField(
         slug_field="username",
@@ -134,7 +134,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    """Сериализатор Комментариев к отзывам"""
+    """Сериализатор Комментариев к отзывам."""
 
     author = SlugRelatedField(
         slug_field="username",

@@ -19,7 +19,6 @@ class User(AbstractUser):
         default=UserRole.USER,
         verbose_name="Роль"
     )
-
     username = models.CharField(
         max_length=150,
         unique=True,
