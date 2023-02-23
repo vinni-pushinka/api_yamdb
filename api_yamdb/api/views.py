@@ -63,11 +63,18 @@ def sign_up(request):
         user, created = User.objects.get_or_create(
             username=request.data.get("username")
         )
-        if created is False:
-            confirmation_code = default_token_generator.make_token(user)
-            user.confirmation_code = confirmation_code
-            user.save()
-            return Response("Токен обновлён", status=status.HTTP_200_OK)
+        confirmation_code = default_token_generator.make_token(user)
+        user.confirmation_code = confirmation_code
+        user.save()
+        send_mail(
+            "Код подтверждения",
+            f"Здравствуйте! Новый код подтверждения: {confirmation_code}",
+            EMAIL,
+            [f"{request.data.get('email')}"],
+            fail_silently=False,
+        )
+        return Response("Код подтверждения обновлён",
+                        status=status.HTTP_200_OK)
     serializer.is_valid(raise_exception=True)
     serializer.save()
     user = User.objects.get(
@@ -83,6 +90,23 @@ def sign_up(request):
         fail_silently=False,
     )
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def obtain_token(request):
+    """Функция получения пользователем токена."""
+    serializer = ObtainTokenSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    username = serializer.validated_data.get("username")
+    confirmation_code = serializer.validated_data.get("confirmation_code")
+    user = get_object_or_404(User, username=username)
+    if confirmation_code != user.confirmation_code:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    token = RefreshToken.for_user(user)
+    return Response(
+        {"token": str(token.access_token)}, status=status.HTTP_200_OK
+    )
 
 
 @api_view(["POST"])

@@ -8,14 +8,16 @@ from django.utils import timezone
 class User(AbstractUser):
     """Модель пользователя."""
 
-    USER = "user"
-    MODERATOR = "moderator"
-    ADMIN = "admin"
+    class UserRole(models.TextChoices):
+        USER = "user"
+        MODERATOR = "moderator"
+        ADMIN = "admin"
 
-    ROLES = (
-        (USER, "user"),
-        (MODERATOR, "moderator"),
-        (ADMIN, "admin"),
+    role = models.CharField(
+        max_length=255,
+        choices=UserRole.choices,
+        default=UserRole.USER,
+        verbose_name="Роль"
     )
 
     username = models.CharField(
@@ -39,9 +41,7 @@ class User(AbstractUser):
         blank=True, max_length=150, verbose_name="Фамилия"
     )
     bio = models.TextField(blank=True, verbose_name="Биография")
-    role = models.CharField(
-        max_length=255, choices=ROLES, default=USER, verbose_name="Роль"
-    )
+
     confirmation_code = models.CharField(
         verbose_name="Токен пользователя",
         max_length=100,

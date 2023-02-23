@@ -40,6 +40,8 @@ Python, Django, Django REST Framework, JWT, SQLite3.
 ```python manage.py migrate```
 6. Запустить проект:
 ```python manage.py runserver```
+7. Загрузить базу из файла:
+```python manage.py load_data_from_csv```
 
 ### Документация:
 Документация API доступна по адресу `http://127.0.0.1:8000/redoc/`.
@@ -61,6 +63,36 @@ GET `/api/v1/titles/`
 GET `/api/v1/titles/{title_id}/reviews/`
 - **Получение списка комментариев к отзыву:**
 GET `/api/v1/ /titles/{title_id}/reviews/{review_id}/comments/`
+- **Публикация нового жанра:**
+POST `/api/v1/genres/'` - c правами Администратора/Суперпользователя
+```
+{
+    "name": "Fiction",
+    "slug": "fiction"
+}
+```
+ответ: 
+```
+{
+    "name": "Fiction",
+    "slug": "fiction"
+}
+```
+- **Публикация новой категории:**
+POST `/api/v1//categories/'` - c правами Администратора/Суперпользователя
+```
+{
+    "name": "Современная литература",
+    "slug": "modern"
+}
+```
+ответ: 
+```
+{
+    "name": "Современная литература",
+    "slug": "modern"
+}
+```
 
 ### Команда проекта:
 - [Andrei Bodrov](https://github.com/awesky): отзывы, комментарии, рейтинг произведений;
