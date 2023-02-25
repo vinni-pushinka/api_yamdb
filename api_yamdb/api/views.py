@@ -6,7 +6,7 @@ from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Genre, Review, Title, User
 
 from api_yamdb.settings import EMAIL
@@ -101,28 +101,11 @@ def obtain_token(request):
     username = serializer.validated_data.get("username")
     confirmation_code = serializer.validated_data.get("confirmation_code")
     user = get_object_or_404(User, username=username)
-    if confirmation_code != user.confirmation_code:
+    if not default_token_generator.check_token(user, confirmation_code):
         return Response(status=status.HTTP_400_BAD_REQUEST)
-    token = RefreshToken.for_user(user)
+    token = AccessToken.for_user(user)
     return Response(
-        {"token": str(token.access_token)}, status=status.HTTP_200_OK
-    )
-
-
-@api_view(["POST"])
-@permission_classes([AllowAny])
-def obtain_token(request):
-    """Функция получения пользователем токена."""
-    serializer = ObtainTokenSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    username = serializer.validated_data.get("username")
-    confirmation_code = serializer.validated_data.get("confirmation_code")
-    new_user = get_object_or_404(User, username=username)
-    if confirmation_code != new_user.confirmation_code:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-    token = RefreshToken.for_user(new_user)
-    return Response(
-        {"token": str(token.access_token)}, status=status.HTTP_200_OK
+        {"token": str(token)}, status=status.HTTP_200_OK
     )
 
 

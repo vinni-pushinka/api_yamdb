@@ -48,7 +48,7 @@ Python, Django, Django REST Framework, JWT, SQLite3.
 
 ### Примеры запросов:
  - **Регистрация пользователя в системе:**
-POST (c параметрами `email` и `username`)
+POST (c параметрами `username` и `email`)
 `/api/v1/auth/signup/`
 В ответ сервис **YaMDB** отправляет письмо с кодом подтверждения (`confirmation_code`) на указанный адрес `email`.
 - **Получение пользователем токена:**
@@ -57,7 +57,6 @@ POST (с параметрами `username` и `confirmation_code`)
 ```
 {
     "username": "testuser1",
-    "email": "testuser@gmail.com",
     "confirmation_code": "bk3ma8-c56776265de7328a17ef39b9ae5c6ee2"
 }
 ```
