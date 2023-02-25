@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from reviews.models import Category, Comment, Genre, Review, Title, User
 
-from .validators import validate_email, validate_username, validate_title_year
+from .validators import validate_email, validate_title_year, validate_username
 
 
 class UserSerializer(serializers.ModelSerializer):
