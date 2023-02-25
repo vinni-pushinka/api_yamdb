@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from reviews.models import Category, Comment, Genre, Review, Title, User
 
-from .validators import validate_email, validate_username
+from .validators import validate_email, validate_username, validate_title_year
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -68,6 +68,7 @@ class TitleSerializer(serializers.ModelSerializer):
     """Сериализатор Произведений основной."""
 
     rating = serializers.SerializerMethodField()
+    year = serializers.IntegerField(validators=[validate_title_year])
 
     def get_rating(self, obj):
         rating = obj.reviews.aggregate(Avg("score", default=0))

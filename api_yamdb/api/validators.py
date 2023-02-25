@@ -1,5 +1,6 @@
 from rest_framework.exceptions import ValidationError
 from reviews.models import User
+import datetime
 
 
 def validate_username(value):
@@ -18,3 +19,12 @@ def validate_email(value):
         raise ValidationError(
             "Пользователь с такой почтой уже зарегистрирован"
         )
+
+
+def validate_title_year(value):
+    year = datetime.date.today().year
+    if value > year:
+        raise ValidationError(
+            'Год не может быть больше текущего!'
+        )
+    return value

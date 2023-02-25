@@ -2,7 +2,6 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import (MaxValueValidator, MinValueValidator,
                                     RegexValidator)
 from django.db import models
-from django.utils import timezone
 
 
 class User(AbstractUser):
@@ -57,7 +56,7 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        return self.role == "admin"
+        return self.role == "admin" or self.is_superuser
 
     @property
     def is_moderator(self):
@@ -110,10 +109,7 @@ class Title(models.Model):
     name = models.CharField(
         max_length=256, verbose_name="Название произведения"
     )
-    year = models.PositiveSmallIntegerField(
-        validators=[MaxValueValidator(timezone.now().year)],
-        verbose_name="Год выпуска",
-    )
+    year = models.PositiveSmallIntegerField(verbose_name="Год выпуска",)
     description = models.TextField(null=True, verbose_name="Описание")
 
     genre = models.ManyToManyField(

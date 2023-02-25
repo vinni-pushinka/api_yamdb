@@ -5,9 +5,7 @@ class UPermissions(permissions.BasePermission):
     """Настройка прав для Пользователей."""
 
     def has_permission(self, request, view):
-        return request.user.is_authenticated and (
-            request.user.is_admin or request.user.is_superuser
-        )
+        return request.user.is_authenticated and request.user.is_admin
 
 
 class CGTPermissions(permissions.BasePermission):
@@ -18,7 +16,7 @@ class CGTPermissions(permissions.BasePermission):
             return True
         if not request.user.is_authenticated:
             return False
-        if request.user.is_admin or request.user.is_superuser:
+        if request.user.is_admin:
             return True
         return False
 
